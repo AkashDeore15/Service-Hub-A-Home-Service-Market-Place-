@@ -17,9 +17,12 @@ const seedProviders = async () => {
       process.exit(1);
     }
 
-    const plumbingCategory = categories.find(c => c.slug === 'plumbing');
-    const electricianCategory = categories.find(c => c.slug === 'electrician');
-    const cleaningCategory = categories.find(c => c.slug === 'cleaning');
+    const categoryList = [
+      categories.find(c => c.slug === 'plumbing'),
+      categories.find(c => c.slug === 'electrician'),
+      categories.find(c => c.slug === 'cleaning')
+    ].filter(Boolean);
+    const defaultCategory = categoryList[0] || categories[0];
 
     const providerUsers = await User.find({ role: 'provider' });
     if (providerUsers.length === 0) {
@@ -30,71 +33,39 @@ const seedProviders = async () => {
     await Provider.deleteMany({});
     console.log('🗑️  Cleared existing providers');
 
-    const providers = [
-      {
-        userId: providerUsers[0]._id,
-        businessName: 'Mike Johnson Plumbing',
-        description: 'Professional plumbing services with over 10 years of experience. We handle leak repairs, pipe installation, drain cleaning, and water heater services. Available 24/7 for emergency services.',
-        serviceCategories: [plumbingCategory._id],
-        documents: {
-          idDocument: null,
-          selfie: null
-        },
-        verification: {
-          idVerified: true,
-          faceMatched: true,
-          nsopwChecked: true,
-          selfDeclared: true,
-          verifiedAt: new Date(),
-          rejectionReason: null
-        },
-        ratingAvg: 4.8,
-        ratingCount: 42,
-        isActive: true
-      },
-      {
-        userId: providerUsers[1]._id,
-        businessName: 'Spark Electric Co.',
-        description: 'Licensed electrical services for residential and commercial properties. Specializing in wiring, outlet installation, panel upgrades, and lighting fixture installation. Safety is our top priority.',
-        serviceCategories: [electricianCategory._id],
-        documents: {
-          idDocument: null,
-          selfie: null
-        },
-        verification: {
-          idVerified: true,
-          faceMatched: true,
-          nsopwChecked: true,
-          selfDeclared: true,
-          verifiedAt: new Date(),
-          rejectionReason: null
-        },
-        ratingAvg: 4.9,
-        ratingCount: 38,
-        isActive: true
-      },
-      {
-        userId: providerUsers[2]._id,
-        businessName: 'Clean Pro Services',
-        description: 'Professional cleaning services including deep cleaning, move-in/out cleaning, regular maintenance, and post-construction cleaning. We use eco-friendly products and guarantee satisfaction.',
-        serviceCategories: [cleaningCategory._id],
-        documents: {
-          idDocument: null,
-          selfie: null
-        },
-        verification: {
-          idVerified: true,
-          faceMatched: true,
-          nsopwChecked: true,
-          selfDeclared: true,
-          verifiedAt: new Date(),
-          rejectionReason: null
-        },
-        ratingAvg: 4.7,
-        ratingCount: 56,
-        isActive: true
-      }
+    const businessTemplates = [
+      { businessName: 'Mike Johnson Plumbing', description: 'Professional plumbing services with over 10 years of experience. We handle leak repairs, pipe installation, drain cleaning, and water heater services. Available 24/7 for emergency services.', ratingAvg: 4.8, ratingCount: 42 },
+      { businessName: 'Spark Electric Co.', description: 'Licensed electrical services for residential and commercial properties. Specializing in wiring, outlet installation, panel upgrades, and lighting fixture installation. Safety is our top priority.', ratingAvg: 4.9, ratingCount: 38 },
+      { businessName: 'Clean Pro Services', description: 'Professional cleaning services including deep cleaning, move-in/out cleaning, regular maintenance, and post-construction cleaning. We use eco-friendly products and guarantee satisfaction.', ratingAvg: 4.7, ratingCount: 56 }
     ];
+
+    const providers = providerUsers.map((user, index) => {
+      const template = businessTemplates[index] || {
+        businessName: `${user.fullName} Services`,
+        description: 'Professional home services. Quality and reliability guaranteed.',
+        ratingAvg: 4.5,
+        ratingCount: 10
+      };
+      const category = categoryList[index % categoryList.length] || defaultCategory;
+      return {
+        userId: user._id,
+        businessName: template.businessName,
+        description: template.description,
+        serviceCategories: category ? [category._id] : [],
+        documents: { idDocument: null, selfie: null },
+        verification: {
+          idVerified: true,
+          faceMatched: true,
+          nsopwChecked: true,
+          selfDeclared: true,
+          verifiedAt: new Date(),
+          rejectionReason: null
+        },
+        ratingAvg: template.ratingAvg,
+        ratingCount: template.ratingCount,
+        isActive: true
+      };
+    });
 
     const inserted = await Provider.insertMany(providers);
     console.log(`✅ Inserted ${inserted.length} providers:`);

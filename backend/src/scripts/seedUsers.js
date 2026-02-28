@@ -46,16 +46,16 @@ const users = [
     isActive: true
   },
   {
-    supabaseId: 'seed-provider-001',
-    email: 'mike.plumber@example.com',
-    role: 'provider',
-    fullName: 'Mike Johnson',
-    phone: '+1-555-0201',
+    supabaseId: 'seed-customer-003',
+    email: 'robert.wilson@example.com',
+    role: 'customer',
+    fullName: 'Robert Wilson',
+    phone: '+1-555-0103',
     avatarUrl: null,
     addresses: [
       {
-        label: 'Business',
-        street: '789 Service Rd',
+        label: 'Home',
+        street: '789 Pine St',
         city: 'Chicago',
         state: 'IL',
         zip: '60601',
@@ -66,16 +66,16 @@ const users = [
     isActive: true
   },
   {
-    supabaseId: 'seed-provider-002',
-    email: 'sarah.spark@example.com',
-    role: 'provider',
-    fullName: 'Sarah Spark',
-    phone: '+1-555-0202',
+    supabaseId: 'seed-customer-004',
+    email: 'emily.brown@example.com',
+    role: 'customer',
+    fullName: 'Emily Brown',
+    phone: '+1-555-0104',
     avatarUrl: null,
     addresses: [
       {
-        label: 'Business',
-        street: '321 Electric Blvd',
+        label: 'Home',
+        street: '321 Elm Ave',
         city: 'Houston',
         state: 'TX',
         zip: '77001',
@@ -86,19 +86,19 @@ const users = [
     isActive: true
   },
   {
-    supabaseId: 'seed-provider-003',
-    email: 'clean.pro@example.com',
-    role: 'provider',
-    fullName: 'Clean Pro Services',
-    phone: '+1-555-0203',
+    supabaseId: 'seed-customer-005',
+    email: 'david.lee@example.com',
+    role: 'customer',
+    fullName: 'David Lee',
+    phone: '+1-555-0105',
     avatarUrl: null,
     addresses: [
       {
-        label: 'Business',
-        street: '555 Clean St',
-        city: 'Miami',
-        state: 'FL',
-        zip: '33101',
+        label: 'Home',
+        street: '555 Maple Dr',
+        city: 'Phoenix',
+        state: 'AZ',
+        zip: '85001',
         isDefault: true
       }
     ],
@@ -106,11 +106,22 @@ const users = [
     isActive: true
   },
   {
-    supabaseId: 'seed-admin-001',
-    email: 'admin@example.com',
-    role: 'admin',
-    fullName: 'Admin User',
-    phone: '+1-555-0100',
+    supabaseId: 'seed-test-user',
+    email: 'user@test.com',
+    role: 'customer',
+    fullName: 'Test User',
+    phone: null,
+    avatarUrl: null,
+    addresses: [],
+    verificationStatus: 'verified',
+    isActive: true
+  },
+  {
+    supabaseId: 'seed-test-provider',
+    email: 'provider@test.com',
+    role: 'provider',
+    fullName: 'Test Provider',
+    phone: null,
     avatarUrl: null,
     addresses: [],
     verificationStatus: 'verified',
