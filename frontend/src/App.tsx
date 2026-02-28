@@ -11,7 +11,12 @@ import { ProvidersList } from "./pages/ProvidersList";
 
 const AUTH_STORAGE_KEY = "servicehub-auth";
 
-type StoredAuth = { email: string; role: UserRole; name: string; avatar: string };
+type StoredAuth = {
+  email: string;
+  role: UserRole;
+  name: string;
+  avatar: string;
+};
 
 const loadStoredAuth = (): StoredAuth | null => {
   try {
@@ -32,6 +37,7 @@ const saveAuth = (auth: StoredAuth) => {
 const clearAuth = () => {
   localStorage.removeItem(AUTH_STORAGE_KEY);
 };
+import { FAQ } from "./pages/FAQ";
 
 const App = () => {
   const [user, setUser] = useState<User | Provider | null>(null);
@@ -170,6 +176,8 @@ const App = () => {
         return <UsersList onNavigate={navigate} />;
       case "/providers":
         return <ProvidersList onNavigate={navigate} />;
+      case "/faq":
+        return <FAQ />;
       default:
         return (
           <div className="flex flex-col items-center justify-center min-h-[60vh]">

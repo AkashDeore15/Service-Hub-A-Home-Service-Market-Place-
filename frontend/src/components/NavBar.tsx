@@ -54,22 +54,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 Home
               </span>
-              {user?.role === UserRole.PROVIDER && (
-                <span
-                  onClick={() => onNavigate("/users")}
-                  className={navItemClass("/users")}
-                >
-                  Users
-                </span>
-              )}
-              {user?.role === UserRole.CUSTOMER && (
-                <span
-                  onClick={() => onNavigate("/providers")}
-                  className={navItemClass("/providers")}
-                >
-                  Providers
-                </span>
-              )}
+              <span
+                onClick={() => onNavigate("/faq")}
+                className={navItemClass("/faq")}
+              >
+                Help
+              </span>
             </div>
           </div>
 
@@ -173,6 +163,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 My Profile
               </div>
             )}
+            <div
+              className="block px-4 py-3 rounded-2xl text-base font-semibold text-slate-700 hover:bg-slate-50"
+              onClick={() => {
+                onNavigate("/faq");
+                setIsOpen(false);
+              }}
+            >
+              Help
+            </div>
             <div className="h-px bg-slate-200 my-2"></div>
             {user ? (
               <div
