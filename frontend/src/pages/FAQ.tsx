@@ -209,14 +209,10 @@ export const FAQ: React.FC = () => {
               Still have questions?
             </h3>
             <p className="text-slate-500 font-medium mb-6">
-              Our support team is available 24/7 to help you out.
+              Log in to your account and use the <strong>Support</strong> button
+              in your dashboard to submit a ticket. Our team will respond within
+              24 hours.
             </p>
-            <a
-              href="mailto:support@servicehub.com"
-              className="inline-block bg-slate-900 text-white px-8 py-3 rounded-full font-bold hover:bg-slate-800 hover:scale-105 transition-all shadow-lg"
-            >
-              Contact Support
-            </a>
           </div>
         </div>
       </section>
