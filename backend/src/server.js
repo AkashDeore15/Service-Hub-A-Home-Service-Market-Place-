@@ -11,6 +11,7 @@ import connectDB from './config/database.js';
 // Import routes
 import testRoutes from './routes/testRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 
 // Load environment variables
@@ -37,6 +38,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use('/api/test', testRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/services', serviceRoutes);
 
 // Basic routes
 app.get('/', (req, res) => {

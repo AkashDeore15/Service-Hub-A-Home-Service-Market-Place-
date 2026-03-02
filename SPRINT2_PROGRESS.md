@@ -12,7 +12,7 @@ Docker setup, OOP Python refactor, CI/CD pipeline.
 | 1   | feature/jest-setup  | 8  | ✅ Complete |
 | 2   | feature/auth-middleware  | 10 | ✅ Complete |
 | 3   | feature/secure-routes         |  8 | ✅ Complete |
-| 4   | feature/services-api          | 12 | ⬜ Pending |
+| 4   | feature/services-api          | 12 | ✅ Complete |
 | 5   | feature/providers-api         | 10 | ⬜ Pending |
 | 6   | feature/booking-api           | 12 | ⬜ Pending |
 | 7   | feature/docker-setup          | 10 | ⬜ Pending |
@@ -79,3 +79,22 @@ Docker setup, OOP Python refactor, CI/CD pipeline.
  
 ### Branch: feature/secure-routes
 ### Commit: feat: protect profile routes with JWT authentication middleware
+-----
+## Day 4 — ✅ COMPLETE
+**Branch:** feature/services-api
+**Story Points Completed:** 38/80
+ 
+### Achievements:
+- [x] backend/src/controllers/serviceController.js created
+- [x] listServices() with category, price, search, pagination filters
+- [x] getService(), createService(), updateService(), deleteService()
+- [x] backend/src/routes/serviceRoutes.js created
+- [x] Public: GET /api/services, GET /api/services/:id
+- [x] Protected: POST, PUT, DELETE /api/services/:id (provider role required)
+- [x] Registered in server.js at /api/services
+- [x] JSDoc on all controller functions
+- [x] All endpoints tested with curl
+
+### Branch: feature/services-api
+### Commit: feat: add Services API with CRUD and search/filter
+-----
