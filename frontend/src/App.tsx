@@ -34,7 +34,6 @@ const saveAuth = (auth: StoredAuth) => {
 const clearAuth = () => {
   localStorage.removeItem(AUTH_STORAGE_KEY);
 };
->>>>>>> origin/main
 
 const App = () => {
   const [user, setUser] = useState<User | Provider | null>(null);
