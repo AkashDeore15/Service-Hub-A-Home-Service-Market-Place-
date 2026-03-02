@@ -14,7 +14,7 @@ Docker setup, OOP Python refactor, CI/CD pipeline.
 | 3   | feature/secure-routes         |  8 | ✅ Complete |
 | 4   | feature/services-api          | 12 | ✅ Complete |
 | 5   | feature/providers-api         | 10 | ✅ Complete |
-| 6   | feature/booking-api           | 12 | ⬜ Pending |
+| 6   | feature/booking-api           | 12 | ✅ Complete |
 | 7   | feature/docker-setup          | 10 | ⬜ Pending |
 | 7   | feature/oop-python-refactor   | 10 | ⬜ Pending |
  
@@ -114,3 +114,21 @@ Docker setup, OOP Python refactor, CI/CD pipeline.
 ### Branch: feature/providers-api
 ### Commit: feat: add Providers API with search and filter
 -----
+
+## Day 6 — ✅ COMPLETE
+**Branch:** feature/booking-api
+**Story Points Completed:** 60/80
+ 
+### Achievements:
+- [x] bookingController.js: createBooking, listBookings, getBooking,
+      acceptBooking, rejectBooking
+- [x] bookingRoutes.js: all routes require authenticate
+- [x] POST /api/bookings → customer only
+- [x] PUT /api/bookings/:id/accept → provider only
+- [x] PUT /api/bookings/:id/reject → provider only
+- [x] GET /api/bookings → returns customer's or provider's bookings based on role
+- [x] Registered at /api/bookings in server.js
+ 
+### Branch: feature/booking-api
+### Commit: feat: add Booking API with role-based access control
+----
