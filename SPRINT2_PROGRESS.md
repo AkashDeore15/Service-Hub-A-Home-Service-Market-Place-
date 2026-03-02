@@ -10,11 +10,11 @@ Docker setup, OOP Python refactor, CI/CD pipeline.
 | Day | Branch | Points | Status |
 |-----|--------|--------|--------|
 | 1   | feature/jest-setup  | 8  | ✅ Complete |
-| 2   | feature/auth-middleware       | 10 | ⬜ Pending |
-| 3   | feature/secure-routes         |  8 | ⬜ Pending |
-| 4   | feature/services-api          | 12 | ⬜ Pending |
-| 5   | feature/providers-api         | 10 | ⬜ Pending |
-| 6   | feature/booking-api           | 12 | ⬜ Pending |
+| 2   | feature/auth-middleware  | 10 | ✅ Complete |
+| 3   | feature/secure-routes         |  8 | ✅ Complete |
+| 4   | feature/services-api          | 12 | ✅ Complete |
+| 5   | feature/providers-api         | 10 | ✅ Complete |
+| 6   | feature/booking-api           | 12 | ✅ Complete |
 | 7   | feature/docker-setup          | 10 | ⬜ Pending |
 | 7   | feature/oop-python-refactor   | 10 | ⬜ Pending |
  
@@ -32,3 +32,103 @@ Docker setup, OOP Python refactor, CI/CD pipeline.
  
 ### Branch: feature/jest-setup
 ### Commit: chore: configure Jest for ESM + add auth middleware test suite
+-----
+## Day 2 — ✅ COMPLETE
+**Branch:** feature/auth-middleware
+**Story Points Completed:** 18/80
+ 
+### Achievements:
+- [x] authMiddleware.js created at backend/src/middleware/
+- [x] authenticate() — validates Supabase JWT, attaches req.user
+- [x] requireRole() — RBAC factory middleware (provider/customer/admin)
+- [x] optionalAuthenticate() — attaches user if token present, silent fail
+- [x] SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY added to backend/.env
+- [x] LBYL pattern: header/token checks before any async operations
+- [x] EAFP pattern: Supabase verification in try/catch
+- [x] Factory Method pattern: SupabaseClientFactory class
+- [x] Server still starts and /health returns 200
+- [x] All 15 Jest tests still pass
+ 
+### Branch: feature/auth-middleware
+### Commit: feat: implement JWT auth middleware with LBYL/EAFP/Factory patterns
+------
+## Day 3 — ✅ COMPLETE
+**Branch:** feature/secure-routes
+**Story Points Completed:** 26/80
+ 
+### Achievements:
+- [x] profileRoutes.js replaced with secured version
+- [x] GET /api/profile/me requires valid Bearer token (401 without)
+- [x] GET /api/profile/users requires valid Bearer token (401 without)
+- [x] GET /api/profile/user/:id requires valid Bearer token (401 without)
+- [x] GET /api/profile/providers remains PUBLIC (no auth required)
+- [x] GET /api/profile/provider/:id remains PUBLIC (no auth required)
+- [x] GET /api/categories remains PUBLIC (no auth required)
+- [x] All smoke tests pass
+- [x] Jest tests still all pass (npm test)
+ 
+### Endpoints secured:
+  GET /api/profile/me        → authenticate required
+  GET /api/profile/users     → authenticate required
+  GET /api/profile/user/:id  → authenticate required
+ 
+### Endpoints remaining public:
+  GET /api/profile/providers    → public browse
+  GET /api/profile/provider/:id → public browse
+  GET /api/categories           → public browse
+ 
+### Branch: feature/secure-routes
+### Commit: feat: protect profile routes with JWT authentication middleware
+-----
+## Day 4 — ✅ COMPLETE
+**Branch:** feature/services-api
+**Story Points Completed:** 38/80
+ 
+### Achievements:
+- [x] backend/src/controllers/serviceController.js created
+- [x] listServices() with category, price, search, pagination filters
+- [x] getService(), createService(), updateService(), deleteService()
+- [x] backend/src/routes/serviceRoutes.js created
+- [x] Public: GET /api/services, GET /api/services/:id
+- [x] Protected: POST, PUT, DELETE /api/services/:id (provider role required)
+- [x] Registered in server.js at /api/services
+- [x] JSDoc on all controller functions
+- [x] All endpoints tested with curl
+
+### Branch: feature/services-api
+### Commit: feat: add Services API with CRUD and search/filter
+-----
+
+## Day 5 — ✅ COMPLETE
+**Branch:** feature/providers-api
+**Story Points Completed:** 48/80
+ 
+### Achievements:
+- [x] searchProviders() added to providerController.js
+- [x] Filters: category, minRating, isActive, business name search
+- [x] Pagination: page + limit query params
+- [x] providerRoutes.js: GET /, GET /search, GET /:id — all public
+- [x] Registered at /api/providers in server.js
+- [x] All endpoints tested
+ 
+### Branch: feature/providers-api
+### Commit: feat: add Providers API with search and filter
+-----
+
+## Day 6 — ✅ COMPLETE
+**Branch:** feature/booking-api
+**Story Points Completed:** 60/80
+ 
+### Achievements:
+- [x] bookingController.js: createBooking, listBookings, getBooking,
+      acceptBooking, rejectBooking
+- [x] bookingRoutes.js: all routes require authenticate
+- [x] POST /api/bookings → customer only
+- [x] PUT /api/bookings/:id/accept → provider only
+- [x] PUT /api/bookings/:id/reject → provider only
+- [x] GET /api/bookings → returns customer's or provider's bookings based on role
+- [x] Registered at /api/bookings in server.js
+ 
+### Branch: feature/booking-api
+### Commit: feat: add Booking API with role-based access control
+----

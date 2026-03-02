@@ -5,13 +5,16 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+
+//API Imports
 import cloudinary from './config/cloudinary.js';
 import connectDB from './config/database.js';
-
-// Import routes
 import testRoutes from './routes/testRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
+import providerRoutes from './routes/providerRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +40,9 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use('/api/test', testRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/services', serviceRoutes);
+app.use('/api/providers', providerRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Basic routes
 app.get('/', (req, res) => {
