@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { UserRole } from "../../types";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, MessageCircle } from "lucide-react";
 
 interface NavbarProps {
   user: { name: string; role: UserRole; avatar?: string } | null;
@@ -15,6 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
   onNavigate,
   currentPath,
+  onOpenSupport,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -89,6 +90,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="text-sm font-bold text-slate-800">
                     {user.name}
                   </span>
+                </button>
+                <button
+                  onClick={onOpenSupport}
+                  className="p-2 hover:bg-teal-50 text-teal-600 rounded-full transition-colors"
+                  title="Support"
+                >
+                  <MessageCircle size={18} />
                 </button>
                 <button
                   onClick={onLogout}
@@ -171,6 +179,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
               >
                 My Profile
+              </div>
+            )}
+            {user && (
+              <div
+                className="block px-4 py-3 rounded-2xl text-base font-semibold text-teal-600 hover:bg-teal-50"
+                onClick={() => {
+                  onOpenSupport();
+                  setIsOpen(false);
+                }}
+              >
+                Support
               </div>
             )}
             <div className="h-px bg-slate-200 my-2"></div>

@@ -8,6 +8,7 @@ import { Register } from "./pages/Register";
 import { Profile } from "./pages/Profile";
 import { UsersList } from "./pages/UsersList";
 import { ProvidersList } from "./pages/ProvidersList";
+import { SupportModal } from "./components/SupportModal";
 
 const AUTH_STORAGE_KEY = "servicehub-auth";
 
@@ -38,6 +39,7 @@ const App = () => {
   const [currentPath, setCurrentPath] = useState("/");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authRestored, setAuthRestored] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   useEffect(() => {
     const stored = loadStoredAuth();
@@ -194,9 +196,15 @@ const App = () => {
         onLogout={handleLogout}
         onNavigate={navigate}
         currentPath={currentPath}
-        onOpenSupport={() => {}}
+        onOpenSupport={() => setIsSupportOpen(true)}
       />
       <main>{renderContent()}</main>
+      <SupportModal
+        isOpen={isSupportOpen}
+        onClose={() => setIsSupportOpen(false)}
+        userId={user?.id || "guest"}
+        userRole={(user?.role?.toLowerCase() as "customer" | "provider") || "customer"}
+      />
     </div>
   );
 };

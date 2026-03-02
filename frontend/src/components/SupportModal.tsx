@@ -2,8 +2,18 @@ import React, { useState } from "react";
 import { X, MessageSquare, Loader2 } from "lucide-react";
 
 type UserRole = "customer" | "provider";
-type IssueType = "INCIDENT" | "APPEAL" | "REPORT";
 type Priority = "LOW" | "MEDIUM" | "HIGH";
+
+const SUBJECT_OPTIONS = [
+  "Provider did not show up",
+  "Poor quality of work",
+  "Billing or payment issue",
+  "Rude or unprofessional behavior",
+  "Verification or profile appeal",
+  "Incorrect service category",
+  "Safety concern",
+  "Other",
+];
 
 interface SupportModalProps {
   isOpen: boolean;
@@ -18,10 +28,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   userId,
   userRole,
 }) => {
-  const defaultType: IssueType = userRole === "provider" ? "APPEAL" : "INCIDENT";
-
-  const [type, setType] = useState<IssueType>(defaultType);
-  const [subject, setSubject] = useState("");
+  const [subject, setSubject] = useState(SUBJECT_OPTIONS[0]);
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<Priority>("MEDIUM");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,8 +38,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   if (!isOpen) return null;
 
   const resetForm = () => {
-    setType(defaultType);
-    setSubject("");
+    setSubject(SUBJECT_OPTIONS[0]);
     setDescription("");
     setPriority("MEDIUM");
     setError(null);
@@ -54,9 +60,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          requesterId: userId,
-          requesterRole: userRole,
-          type,
+          userId,
           subject,
           description,
           priority,
@@ -75,14 +79,6 @@ export const SupportModal: React.FC<SupportModalProps> = ({
       setIsSubmitting(false);
     }
   };
-
-  const issueTypeOptions =
-    userRole === "customer"
-      ? [{ value: "INCIDENT" as IssueType, label: "Report a Service Issue" }]
-      : [
-          { value: "APPEAL" as IssueType, label: "Appeal (Category / Verification)" },
-          { value: "REPORT" as IssueType, label: "Report Customer Behavior" },
-        ];
 
   const priorityOptions: { value: Priority; label: string; color: string }[] = [
     { value: "LOW", label: "Low", color: "text-slate-600 border-slate-300 bg-slate-50" },
@@ -152,37 +148,23 @@ export const SupportModal: React.FC<SupportModalProps> = ({
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
-              {/* Issue Type */}
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  Issue Type
-                </label>
-                <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value as IssueType)}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition"
-                >
-                  {issueTypeOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {/* Subject */}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">
-                  Subject
+                  What is your issue about?
                 </label>
-                <input
-                  type="text"
+                <select
                   required
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Brief summary of your issue"
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition"
-                />
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition"
+                >
+                  {SUBJECT_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Priority */}
