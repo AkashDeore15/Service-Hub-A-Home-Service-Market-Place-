@@ -12,6 +12,7 @@ import connectDB from './config/database.js';
 import testRoutes from './routes/testRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import serviceRoutes from './routes/serviceRoutes.js';
+import complaintRoutes from './routes/complaintRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 import providerRoutes from './routes/providerRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
@@ -39,6 +40,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // API Routes
 app.use('/api/test', testRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/complaints', complaintRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/providers', providerRoutes);
