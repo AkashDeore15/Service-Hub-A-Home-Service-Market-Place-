@@ -266,6 +266,7 @@ export const Profile: React.FC<ProfileProps> = ({
                 )}
               </div>
             </div>
+
             <div className="mb-6 flex items-start justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-slate-900 mb-2">{fullName}</h1>
@@ -307,6 +308,16 @@ export const Profile: React.FC<ProfileProps> = ({
                     <p className="text-slate-900 font-medium">
                       {serviceCategory}
                     </p>
+                  </div>
+                </div>
+              )}
+
+              {isProvider && (data as BackendProvider).hourlyRate !== undefined && (
+                <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl">
+                  <Briefcase className="h-5 w-5 text-slate-400" />
+                  <div>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Hourly Rate</p>
+                    <p className="text-slate-900 font-medium">${(data as BackendProvider).hourlyRate}/hr</p>
                   </div>
                 </div>
               )}
