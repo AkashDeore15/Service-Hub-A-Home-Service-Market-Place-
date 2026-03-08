@@ -197,10 +197,10 @@ describe("Profile — provider user", () => {
 describe("Profile — 'me' profile", () => {
   beforeEach(() => {
     vi.mocked(profileService.getMe).mockResolvedValue({
-      success: true,
-      data: { ...customerUser, type: "user" } as any,
+        success: true,
+        data: { ...customerUser, type: "user" } as unknown as typeof customerUser & { type: string },
     });
-  });
+    });
 
   it("renders own profile without error", async () => {
     render(
