@@ -3,6 +3,13 @@
  * Basic smoke tests + code quality checks for ServiceHub backend
  * Run: npm test
  */
+import { jest } from '@jest/globals';
+
+jest.mock('../services/emailService.js', () => ({
+  sendWelcomeEmail: jest.fn().mockResolvedValue({ success: true }),
+  sendBookingConfirmation: jest.fn().mockResolvedValue({ success: true }),
+  sendPasswordReset: jest.fn().mockResolvedValue({ success: true }),
+}));
 
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import request from 'supertest';
