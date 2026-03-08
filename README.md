@@ -1,39 +1,93 @@
-## Sprint Status
- 
-| Sprint | Version | Status | Story Points | Key Deliverables |
-|--------|---------|--------|--------------|------------------|
-| Sprint 1 | v0.1.0-sprint1 | ✅ Complete | 42/42 | Backend foundation, MongoDB, Cloudinary, Email, Models, Category API |
-| Sprint 2 | v0.2.0-sprint2 | ✅ Complete | 70/70 | Auth middleware, Services API, Providers API, Booking API, Docker |
-| Sprint 3 | v0.3.0-sprint3 | ⬜ Upcoming | 0/TBD | Booking journey, Reviews, Profiles |
-| Sprint 4 | v0.4.0-sprint4 | ⬜ Upcoming | 0/TBD | Dashboards, Notifications |
-| Sprint 5 | v0.5.0-sprint5 | ⬜ Upcoming | 0/TBD | Payments, User Verification AI |
-| Sprint 6 | v1.0.0         | ⬜ Upcoming | 0/TBD | Final polish, deployment |
- 
-## API Endpoints (Sprint 2)
- 
-### Public (no auth required)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /health | Server health check |
-| GET | /api/categories | List all categories |
-| GET | /api/services | List/search services |
-| GET | /api/services/:id | Get single service |
-| GET | /api/providers | List all providers |
-| GET | /api/providers/search | Search providers |
-| GET | /api/providers/:id | Get single provider |
-| GET | /api/profile/providers | List providers (profile view) |
-| GET | /api/profile/provider/:id | Single provider profile |
- 
-### Protected (Bearer token required)
-| Method | Endpoint | Role | Description |
-|--------|----------|------|-------------|
-| GET | /api/profile/me | any | Get current user profile |
-| GET | /api/profile/users | any | List customers |
-| GET | /api/profile/user/:id | any | Single user profile |
-| POST | /api/services | provider | Create service |
-| PUT | /api/services/:id | provider | Update service |
-| DELETE | /api/services/:id | provider | Delete service |
-| GET | /api/bookings | any | List my bookings |
-| POST | /api/bookings | customer | Create booking |
-| PUT | /api/bookings/:id/accept | provider | Accept booking |
-| PUT | /api/bookings/:id/reject | provider | Reject booking |
+# Service Hub — A Home Service Marketplace
+#TEST1
+
+
+## Short description
+
+Service Hub is a full-stack home-services marketplace that connects users with service providers (cleaning, repairs, visual damage assessment, and more). This repository contains the backend API, frontend web client, and an auxiliary visual-damage-assessment service.
+
+## Repository layout
+
+- `backend/` — Node.js API, models, routes, controllers, tests, and seed scripts.
+- `frontend/` — React + TypeScript web client (Vite).
+- `visual-damage-assessment/` — Python service for image-based damage analysis.
+
+## Current status — Sprint 2
+
+This project is currently in Sprint 2. See `SPRINT2_PROGRESS.md` for sprint goals, completed stories, and remaining tasks.
+
+## Prerequisites
+
+- Node.js (v16+ recommended)
+- npm or yarn
+- MongoDB (local or Atlas)
+- Docker & Docker Compose (optional)
+- Python 3.8+ for `visual-damage-assessment/` (if using that module)
+
+## Quick start (local)
+
+1. Backend
+
+```bash
+cd backend
+npm install
+# create a .env with your credentials (MONGODB_URI, JWT_SECRET, CLOUDINARY_* etc.)
+# seed data (optional)
+npm run dev
+```
+
+Seed sample data (examples)
+
+```bash
+cd backend
+# run seed scripts (paths under src/scripts)
+node src/scripts/seedCategories.js
+node src/scripts/seedProviders.js
+node src/scripts/seedUsers.js
+```
+
+2. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+# open the URL Vite reports (usually http://localhost:5173)
+```
+
+3. Docker (all services)
+
+```bash
+docker-compose up --build
+```
+
+## Tests
+
+Backend tests are located under `backend/src/tests`. From the `backend/` directory run:
+
+```bash
+npm test
+```
+
+## Documentation & useful files
+
+- API docs: `backend/API_DOCUMENTATION.md`
+- Server entry: `backend/src/server.js`
+- Routes: `backend/src/routes/`
+- Seed scripts: `backend/src/scripts/`
+- Sprint notes: `SPRINT1_PROGRESS.md`, `SPRINT2_PROGRESS.md`
+
+## Contributing
+
+- Create issues for bugs or feature requests.
+- Follow the Sprint notes in `SPRINT2_PROGRESS.md` when implementing tasks.
+
+## Next recommended steps
+
+- Add a sample `backend/.env.example` showing required environment variables.
+- Add a short `frontend/README.md` with local dev notes and port/proxy details.
+- Add CI to run tests & lint on push/PR.
+
+## Contact
+
+If you want edits or additional details (examples, environment variables, or CI), tell me which section to expand.
