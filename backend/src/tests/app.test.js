@@ -11,15 +11,15 @@ import app from '../server.js';
 
 // ─── Test database ────────────────────────────────────────────────────────────
 beforeAll(async () => {
-  if (mongoose.connection.readyState === 0) { // 0 = disconnected
+  if (mongoose.connection.readyState === 0) {
     const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/service_hub_test';
     await mongoose.connect(uri);
   }
-});
+}, 30000);
 
 afterAll(async () => {
   await mongoose.connection.close();
-});
+}, 30000);
 
 // ─── 1. Health check ──────────────────────────────────────────────────────────
 describe('Health', () => {
