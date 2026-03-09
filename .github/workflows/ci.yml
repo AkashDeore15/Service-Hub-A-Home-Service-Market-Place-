@@ -1,99 +1,52 @@
-# .github/workflows/ci.yml
-name: CI – Build & Test
+name: Auto-Generate README
 
 on:
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
-    branches: ['**']
+    branches: [main]
+    types: [closed]
 
 jobs:
-  # ─────────────────────────────────────────
-  # 1. Backend
-  # ─────────────────────────────────────────
-  backend:
-    name: Backend CI
+  update-readme:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
-
-    env:
-      NODE_ENV: test
-      PORT: 3000
-      # Use local MongoDB service in CI (no secrets required)
-      MONGO_URI: mongodb://localhost:27017/service_hub_test
-      MONGODB_URI: mongodb://localhost:27017/service_hub_test
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      CLOUDINARY_CLOUD_NAME: ${{ vars.CLOUDINARY_CLOUD_NAME }}
-      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      FROM_EMAIL: ${{ vars.FROM_EMAIL }}
-      FROM_NAME: ${{ vars.FROM_NAME }}
-      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
-      CORS_ORIGIN: http://localhost:5173
+    permissions:
+      contents: write  # This gives the bot permission to edit files
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: backend/package-lock.json
+          fetch-depth: 1
 
-      - name: Install dependencies
-        run: npm ci
-        working-directory: backend
-
-      - name: Wait for MongoDB
+      - name: Overwrite README.md
         run: |
-          for i in {1..30}; do
-            if nc -z localhost 27017; then
-              echo "MongoDB is available"; break;
-            fi
-            echo "Waiting for MongoDB... ($i)";
-            sleep 1;
-          done
-        working-directory: backend
+          # Get the last commit message
+          LAST_CHANGE=$(git log -1 --pretty=format:"%s")
+          
+          cat > README.md << HEREDOC
+          # 🏠 Service Hub — Marketplace
 
-      - name: Lint
-        run: npm run lint --if-present
-        working-directory: backend
+          ## 📢 Latest Update
+          > **Last Change:** ${LAST_CHANGE}
+          > **Updated On:** $(date)
 
-      - name: Run tests
-        run: npm test
-        working-directory: backend
+          ---
 
-  # ─────────────────────────────────────────
-  # 2. Frontend
-  # ─────────────────────────────────────────
-  frontend:
-    name: Frontend CI
-    runs-on: ubuntu-latest
+          ## 🚀 Quick Start
+          \`\`\`bash
+          npm run setup
+          npm run dev
+          \`\`\`
 
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      VITE_API_BASE_URL: http://localhost:3000
+          ---
+          *Last updated via GitHub Actions [skip ci]*
+          HEREDOC
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-        working-directory: frontend
-
-      - name: Lint
-        run: npm run lint --if-present
-        working-directory: frontend
-
-      - name: Build
-        run: npm run build
-        working-directory: frontend
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          # Only push if something actually changed
+          git diff --staged --quiet || (git commit -m "docs: auto-update readme [skip ci]" && git push)
