@@ -1,7 +1,8 @@
 ### 📢 Latest Project Update
-> **Change:** Revise README for clarity and project details
-> **Date:** Wed Mar 11 18:46:42 UTC 2026
+> **Change:** Update Supabase configuration variables in .env.example
+> **Date:** Thu Mar 12 19:11:47 UTC 2026
 ---
+
 
 
 # 🏠 Service Hub — Marketplace
