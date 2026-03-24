@@ -7,8 +7,9 @@ import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Profile } from "./pages/Profile";
-import { UsersList } from "./pages/UsersList";
-import { ProvidersList } from "./pages/ProvidersList";
+import { ProviderDashboard } from "./pages/ProviderDashboard";
+import { FAQ } from "./pages/FAQ";
+import { ServiceProviders } from "./pages/ServiceProviders";
 import { SupportModal } from "./components/SupportModal";
 
 const AUTH_STORAGE_KEY = "servicehub-auth";
@@ -40,7 +41,6 @@ const saveAuth = (auth: StoredAuth) => {
 const clearAuth = () => {
   localStorage.removeItem(AUTH_STORAGE_KEY);
 };
-import { FAQ } from "./pages/FAQ";
 
 const App = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
@@ -80,10 +80,12 @@ const App = () => {
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
+  // Protected paths require a logged-in session
   const isProtectedPath =
-    basePath === "/users" ||
-    basePath === "/providers" ||
+    basePath === "/dashboard" ||
     basePath.startsWith("/profile");
+
+  // Redirect unauthenticated users away from protected pages
   useEffect(() => {
     if (!authRestored) return;
     if (isProtectedPath && !isAuthenticated) {
@@ -91,26 +93,14 @@ const App = () => {
     }
   }, [isProtectedPath, isAuthenticated, authRestored]);
 
-  useEffect(() => {
-    if (basePath === "/profile" && isAuthenticated && user) {
-      window.location.hash =
-        user.role === UserRole.PROVIDER ? "/users" : "/providers";
-    }
-  }, [basePath, isAuthenticated, user]);
-
-  useEffect(() => {
-    if (!isAuthenticated || !user) return;
-    if (basePath === "/login" || basePath === "/register") {
-      window.location.hash = "/profile/me";
-    } else if (basePath === "/providers" && user.role === UserRole.PROVIDER) {
-      window.location.hash = "/users";
-    } else if (basePath === "/users" && user.role === UserRole.CUSTOMER) {
-      window.location.hash = "/providers";
-    }
-  }, [basePath, isAuthenticated, user]);
+  // Redirect providers away from /dashboard if not authenticated
+  // (handled by isProtectedPath guard above)
 
   const profileIdMatch = basePath.match(/^\/profile\/(.+)$/);
   const profileId = profileIdMatch ? profileIdMatch[1] : null;
+
+  const bookServiceMatch = basePath.match(/^\/book\/(.+)$/);
+  const bookServiceId = bookServiceMatch ? bookServiceMatch[1] : null;
 
   const navigate = (path: string) => {
     window.location.hash = path;
@@ -129,6 +119,22 @@ const App = () => {
       const supabaseUser = data?.user;
       const name = supabaseUser?.email?.split("@")[0] || email.split("@")[0];
       const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0F172A&color=fff`;
+
+      // Sync Supabase user → MongoDB on every login (idempotent upsert).
+      // This covers: first-time login, email-confirmation-delayed signups, and role updates.
+      if (accessToken) {
+        const metaRole =
+          (supabaseUser?.user_metadata?.role as string) ||
+          String(role).toLowerCase();
+        fetch(`${API_BASE}/api/profile/sync`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ fullName: name, role: metaRole }),
+        }).catch((e) => console.error("Sync error:", e));
+      }
 
       // fetch full profile from backend
       let profile = null;
@@ -174,9 +180,9 @@ const App = () => {
         accessToken,
       });
       if (userData.role === UserRole.PROVIDER) {
-        navigate("/users");
+        navigate("/dashboard");
       } else {
-        navigate("/providers");
+        navigate("/");
       }
     } catch (err) {
       console.error("Login failed", err);
@@ -260,6 +266,10 @@ const App = () => {
       );
     }
 
+    if (bookServiceId) {
+      return <ServiceProviders serviceId={bookServiceId} onNavigate={navigate} />;
+    }
+
     switch (basePath) {
       case "/":
         return <Home onNavigate={navigate} user={user} />;
@@ -277,11 +287,8 @@ const App = () => {
             onLoginClick={() => navigate("/login")}
           />
         );
-
-      case "/users":
-        return <UsersList onNavigate={navigate} />;
-      case "/providers":
-        return <ProvidersList onNavigate={navigate} />;
+      case "/dashboard":
+        return <ProviderDashboard user={user} onNavigate={navigate} />;
       case "/faq":
         return <FAQ />;
       default:
