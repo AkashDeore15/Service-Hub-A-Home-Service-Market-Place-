@@ -49,7 +49,7 @@ const App = () => {
     const stored = loadStoredAuth();
     if (stored) {
       return {
-        id: "1",
+        id: "",
         name: stored.name,
         email: stored.email,
         role: stored.role,
@@ -109,75 +109,82 @@ const App = () => {
   };
 
   const handleLogin = async (
-    email: string,
-    role: UserRole,
-    password?: string,
-  ) => {
-    try {
-      if (!password) throw new Error("Password required");
-      const { data, error } = await signIn(email, password);
-      if (error) throw error;
-      const accessToken = data?.session?.access_token;
-      const supabaseUser = data?.user;
-      const name = supabaseUser?.email?.split("@")[0] || email.split("@")[0];
-      const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0F172A&color=fff`;
+  email: string,
+  role: UserRole,
+  password?: string,
+): Promise<{ success: boolean; message?: string }> => {
+  try {
+    if (!password) throw new Error("Password required");
 
-      // Sync Supabase user → MongoDB on every login (idempotent upsert).
-      // This covers: first-time login, email-confirmation-delayed signups, and role updates.
+    const { data, error } = await signIn(email, password);
+    if (error) throw error;
 
-      // fetch full profile from backend
-      let profile = null;
-      if (accessToken) {
-        try {
-          const resp = await fetch(`${API_BASE}/api/users/me`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-          if (!resp.ok) {
-            const text = await resp.text();
-            console.error("Profile fetch failed", resp.status, text);
-          } else {
-            const json = await resp.json();
-            if (json?.success) profile = json.data;
-          }
-        } catch (fetchErr) {
-          console.error("Profile fetch error:", fetchErr);
-        }
-      }
+    // signIn() calls Supabase SDK directly — shape is { session, user }
+    const accessToken = data?.session?.access_token;
+    const supabaseUser = data?.user;
 
-      const normalizeRole = (r?: string, fallback?: UserRole) => {
-        if (!r) return fallback || UserRole.CUSTOMER;
-        return (
-          (String(r).toUpperCase() as UserRole) || fallback || UserRole.CUSTOMER
-        );
-      };
-
-      const userData = {
-        id: profile?.id || "1",
-        name: profile?.full_name || name,
-        email,
-        role: normalizeRole(profile?.role, role),
-        avatar: profile?.avatar_url || avatar,
-      } as User;
-
-      setUser(userData);
-      setIsAuthenticated(true);
-      saveAuth({
-        email,
-        role: userData.role,
-        name: userData.name,
-        avatar: userData.avatar,
-        accessToken,
-      });
-      if (userData.role === UserRole.PROVIDER) {
-        navigate("/dashboard");
-      } else {
-        navigate("/");
-      }
-    } catch (err) {
-      console.error("Login failed", err);
-      // TODO: show UI error
+    if (!accessToken) {
+      return { success: false, message: "Login failed — no session returned" };
     }
-  };
+
+    const name = supabaseUser?.email?.split("@")[0] || email.split("@")[0];
+    const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0F172A&color=fff`;
+
+    // Fetch full profile from backend using the real endpoint
+    let profile = null;
+    try {
+      const resp = await fetch(`${API_BASE}/api/users/me`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!resp.ok) {
+        console.error("Profile fetch failed", resp.status);
+      } else {
+        const json = await resp.json();
+        if (json?.success) profile = json.data;
+      }
+    } catch (fetchErr) {
+      console.error("Profile fetch error:", fetchErr);
+    }
+
+    const normalizeRole = (r?: string, fallback?: UserRole): UserRole => {
+      if (!r) return fallback || UserRole.CUSTOMER;
+      const upper = r.toUpperCase() as UserRole;
+      return Object.values(UserRole).includes(upper)
+        ? upper
+        : fallback || UserRole.CUSTOMER;
+    };
+
+    const userData = {
+      id: profile?.id || supabaseUser?.id || "",
+      name: profile?.full_name || name,
+      email,
+      role: normalizeRole(profile?.role, role),
+      avatar: profile?.avatar_url || avatar,
+    } as User;
+
+    setUser(userData);
+    setIsAuthenticated(true);
+    saveAuth({
+      email,
+      role: userData.role,
+      name: userData.name,
+      avatar: userData.avatar,
+      accessToken,
+    });
+
+    if (userData.role === UserRole.PROVIDER) {
+      navigate("/dashboard");
+    } else {
+      navigate("/");
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("Login failed", err);
+    const message = err instanceof Error ? err.message : "Login failed. Please try again.";
+    return { success: false, message };
+  }
+};
 
   const handleLogout = () => {
     setIsAuthenticated(false);
