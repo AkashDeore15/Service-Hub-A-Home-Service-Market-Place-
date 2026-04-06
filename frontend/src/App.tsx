@@ -13,6 +13,7 @@ import { ServiceProviders } from "./pages/ServiceProviders";
 import { SupportModal } from "./components/SupportModal";
 import { Chatbot } from "./components/Chatbot";
 import { supabase } from "./lib/supabase";
+import { toUserRole } from "./lib/roleUtils";
 
 const AUTH_STORAGE_KEY = "servicehub-auth";
 const MIGRATION_VERSION     = "supabase-v1";
@@ -60,7 +61,7 @@ const App = () => {
         id: "",
         name: stored.name,
         email: stored.email,
-        role: stored.role,
+        role: toUserRole(stored.role),
         avatar: stored.avatar,
       } as User;
     }
@@ -183,19 +184,19 @@ useEffect(() => {
       console.error("Profile fetch error:", fetchErr);
     }
 
-    const normalizeRole = (r?: string, fallback?: UserRole): UserRole => {
-      if (!r) return fallback || UserRole.CUSTOMER;
-      const upper = r.toUpperCase() as UserRole;
-      return Object.values(UserRole).includes(upper)
-        ? upper
-        : fallback || UserRole.CUSTOMER;
-    };
+    // const normalizeRole = (r?: string, fallback?: UserRole): UserRole => {
+    //   if (!r) return fallback || UserRole.CUSTOMER;
+    //   const upper = r.toUpperCase() as UserRole;
+    //   return Object.values(UserRole).includes(upper)
+    //     ? upper
+    //     : fallback || UserRole.CUSTOMER;
+    // };
 
     const userData = {
       id: profile?.id || supabaseUser?.id || "",
       name: profile?.full_name || name,
       email,
-      role: normalizeRole(profile?.role, role),
+      role: toUserRole(profile?.role, role),
       avatar: profile?.avatar_url || avatar,
     } as User;
 
