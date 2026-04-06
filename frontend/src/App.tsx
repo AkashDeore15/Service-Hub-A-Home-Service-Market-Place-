@@ -15,6 +15,8 @@ import { Chatbot } from "./components/Chatbot";
 import { supabase } from "./lib/supabase";
 
 const AUTH_STORAGE_KEY = "servicehub-auth";
+const MIGRATION_VERSION     = "supabase-v1";
+const MIGRATION_VERSION_KEY = "servicehub-migration-version";
 
 type StoredAuth = {
   email: string;
@@ -45,6 +47,11 @@ const clearAuth = () => {
 };
 
 const App = () => {
+  const storedVersion = localStorage.getItem(MIGRATION_VERSION_KEY);
+  if (storedVersion !== MIGRATION_VERSION) {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    localStorage.setItem(MIGRATION_VERSION_KEY, MIGRATION_VERSION);
+  }
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
   const [user, setUser] = useState<User | Provider | null>(() => {
     const stored = loadStoredAuth();
