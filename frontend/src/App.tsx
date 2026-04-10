@@ -114,9 +114,16 @@ const App = () => {
     password?: string,
   ): Promise<{ success: boolean; message?: string }> => {
     try {
-      if (!password) throw new Error("Password required");
+      if (!password) {
+        return { success: false, message: "Password required" };
+      }
       const { data, error } = await signIn(email, password);
-      if (error) throw error;
+      if (error) {
+        return {
+          success: false,
+          message: error.message || "Invalid credentials",
+        };
+      }
       const accessToken = data?.session?.access_token;
       const supabaseUser = data?.user;
       const name = supabaseUser?.email?.split("@")[0] || email.split("@")[0];
@@ -173,12 +180,14 @@ const App = () => {
       } else {
         navigate("/");
       }
+
       return { success: true };
     } catch (err) {
       console.error("Login failed", err);
-      return { success: false, message: (err as Error).message };
-      // TODO: show UI error
-    }
+      const message =
+        err instanceof Error ? err.message : "Login failed. Please try again.";
+      return { success: false, message };
+      }
   };
 
   const handleLogout = () => {
