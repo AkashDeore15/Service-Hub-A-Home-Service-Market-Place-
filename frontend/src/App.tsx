@@ -167,27 +167,30 @@ useEffect(() => {
       const supabaseUser = data?.user;
 
       if (!accessToken) {
-        return { success: false, message: "Login failed — no session returned" };
+        return {
+          success: false,
+          message: "Login failed — no session returned",
+        };
       }
 
-      const name = supabaseUser?.email?.split("@")[0] || email.split("@")[0];
+      const name =
+        supabaseUser?.email?.split("@")[0] || email.split("@")[0];
       const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0F172A&color=fff`;
 
       let profile = null;
-      if (accessToken) {
-        try {
-          const resp = await fetch(`${API_BASE}/api/users/me`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-          if (!resp.ok) {
-            console.error("Profile fetch failed", resp.status);
-          } else {
-            const json = await resp.json();
-            if (json?.success) profile = json.data;
-          }
-        } catch (fetchErr) {
-          console.error("Profile fetch error:", fetchErr);
+      try {
+        const resp = await fetch(`${API_BASE}/api/users/me`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (!resp.ok) {
+          const text = await resp.text();
+          console.error("Profile fetch failed", resp.status, text);
+        } else {
+          const json = await resp.json();
+          if (json?.success) profile = json.data;
         }
+      } catch (fetchErr) {
+        console.error("Profile fetch error:", fetchErr);
       }
 
       const userData = {
@@ -218,7 +221,9 @@ useEffect(() => {
     } catch (err) {
       console.error("Login failed", err);
       const message =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
+        err instanceof Error
+          ? err.message
+          : "Login failed. Please try again.";
       return { success: false, message };
     }
   };
