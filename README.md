@@ -1,7 +1,8 @@
 ### 📢 Latest Project Update
-> **Change:** fix(auth): JWKS-based token verification — no secrets required (#25)
-> **Date:** Mon Mar 23 19:01:53 UTC 2026
+> **Change:** feat(SER-132): wire chatbot to real booking data (#73)
+> **Date:** Sat Apr 18 18:50:45 UTC 2026
 ---
+
 
 
 
