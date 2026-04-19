@@ -22,7 +22,7 @@ export const register = async (req, res) => {
 
     // Step 1 — create user in auth.users
     // DB trigger automatically creates the public.users row
-    const { data, error } = await supabase.auth.admin.createUser({
+    const { data, error } = await supabase.auth.SignUp({
       email: email.toLowerCase().trim(),
       password,
       email_confirm: true,
@@ -33,7 +33,7 @@ export const register = async (req, res) => {
     });
 
     if (error) {
-      if (error.message.includes('already registered')) {
+      if (error.message?.toLowerCase().includes('already')) {
         return res.status(400).json({
           success: false,
           error: 'Email already registered'
@@ -47,34 +47,17 @@ export const register = async (req, res) => {
 
     // Step 2 — sign in immediately to get a session token
     // admin.createUser() does not return a session, so we call signInWithPassword
-    const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.toLowerCase().trim(),
-      password
-    });
-
-    if (signInError) {
-      // User was created but session failed — still 201, but no token
-      // Frontend should redirect to login in this case
-      return res.status(201).json({
-        success: true,
-        data: {
-          id: data.user.id,
-          email: data.user.email,
-          role: roleLower,
-          sessionError: true
-        }
-      });
-    }
+    
 
     // Return same envelope shape as login() so frontend can handle both identically
     return res.status(201).json({
       success: true,
       data: {
-        token: sessionData.session.access_token,
+        token: data.session.access_token,
         user: {
-          id: sessionData.user.id,
-          email: sessionData.user.email,
-          role: sessionData.user.user_metadata?.role || roleLower
+          id: data.user.id,
+          email: data.user.email,
+          role: data.user.user_metadata?.role || roleLower
         }
       }
     });
@@ -108,7 +91,7 @@ export const login = async (req, res) => {
       });
     }
 
-    return res.json({
+    return res.status(200).json({
       success: true,
       data: {
         token: data.session.access_token,
