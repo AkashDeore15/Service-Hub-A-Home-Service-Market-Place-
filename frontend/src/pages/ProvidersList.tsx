@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { profileService } from "../services/profile";
 import type { BackendProvider } from "../services/profile";
 import { ArrowLeft, User as UserIcon, Star, Loader2, Search, X } from "lucide-react";
 
