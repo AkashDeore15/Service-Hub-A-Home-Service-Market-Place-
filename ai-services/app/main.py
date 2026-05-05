@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -5,13 +7,20 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.routes import health, profile
 from app.routes import ocr_routes, face_routes, nsopw_routes
-# Legacy verification routes kept for backward compatibility
 from app.routes import verification as legacy_verification
 from app.middleware.timer import TimingMiddleware
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if settings.ENV not in ("development", "production"):
+        logger.error(
+            "ENV=%r is not 'development' or 'production'; "
+            "internal key guard will be enforced on all routes",
+            settings.ENV,
+        )
     print(f"🚀 ServiceHub Verification Service starting on port {settings.PORT}")
     print(f"📋 Environment: {settings.ENV}")
     print("📡 Standardized routes:")
