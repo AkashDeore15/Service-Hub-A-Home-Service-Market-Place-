@@ -94,66 +94,70 @@ export const register = async (req, res) => {
       });
     }
 
-    // Step 2 — update user record in public.users (row is auto-created by db trigger on auth.users)
-    const { data: newUser, error: userUpdateError } = await supabase
+    // Get the public.users id created by the trigger
+    await new Promise(resolve => setTimeout(resolve, 500)); // wait for trigger
+    const { data: publicUser } = await supabase
       .from('users')
-      .update({
-        full_name: fullName.trim(),
-        email: email.toLowerCase().trim(),
-        role: roleLower,
-        phone: phone || null,
-        dob: dobIso,
-      })
+      .select('id')
       .eq('supabase_id', data.user.id)
-      .select()
-      .single();
+      .maybeSingle();
 
-    if (userUpdateError || !newUser) {
-      return res.status(500).json({
-        success: false,
-        message: userUpdateError?.message || 'Failed to update user record'
-      });
-    }
+    if (publicUser?.id) {
+      await supabase
+        .from('users')
+        .update({ dob: dobIso, phone: phone || null })
+        .eq('supabase_id', data.user.id);
 
-    // Step 3 — insert address if provided
-    if (street && city && state && zip) {
-      const { error: addressError } = await supabase
-        .from('addresses')
-        .insert({
-          user_id: newUser.id,
-          label: 'home',
-          street,
-          city,
-          state,
-          zip,
-          is_default: true,
-        });
+      // Step 3 — insert address if provided
+      if (street && city && state && zip) {
+        const { error: addressError } = await supabase
+          .from('addresses')
+          .insert({
+            user_id: publicUser.id,
+            label: 'home',
+            street,
+            city,
+            state,
+            zip,
+            is_default: true,
+          });
 
-      if (addressError) {
-        console.error('Address insert error:', addressError.message);
-        // Do not block registration — just log it
+        if (addressError) {
+          console.error('Address insert error:', addressError.message);
+          // Do not block registration — just log it
+        }
       }
-    }
 
-    // Step 4 — create provider record if applicable
-    if (roleLower === 'provider') {
-      const { error: providerError } = await supabase
-        .from('providers')
-        .insert({
-          user_id: newUser.id,
-          business_name: fullName.trim(),
-          description: 'Welcome to ServiceHub! Please complete your provider profile.',
-          rating_avg: 0,
-          rating_count: 0,
-        });
+      // Step 4 — create provider record if applicable
+      if (roleLower === 'provider') {
+        const { data: existingProvider } = await supabase
+          .from('providers')
+          .select('id')
+          .eq('user_id', publicUser.id)
+          .maybeSingle();
 
-      if (providerError) {
-        console.error('Provider insert error:', providerError.message);
-        return res.status(500).json({
-          success: false,
-          message: 'Failed to create provider profile'
-        });
+        if (!existingProvider) {
+          const { error: providerError } = await supabase
+            .from('providers')
+            .insert({
+              user_id: publicUser.id,
+              business_name: fullName.trim(),
+              description: 'Welcome to ServiceHub! Please complete your provider profile.',
+              rating_avg: 0,
+              rating_count: 0,
+            });
+
+          if (providerError) {
+            console.error('Provider insert error:', providerError.message);
+            return res.status(500).json({
+              success: false,
+              message: 'Failed to create provider profile'
+            });
+          }
+        }
       }
+    } else {
+      console.warn('Trigger did not create public.users row in time, skipping address and provider inserts.');
     }
 
     return res.status(201).json({
