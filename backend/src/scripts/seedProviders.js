@@ -24,8 +24,8 @@ const TEST_PROVIDERS = [
     categorySlug: 'plumbing',
     verificationStatus: 'verified',
     services: [
-      { name: 'Leak Detection & Repair', customPrice: 110, customDescription: 'I find and fix leaks fast — same day service available.' },
-      { name: 'Water Heater Installation', customPrice: 320, customDescription: 'Full install including old unit removal. All brands.' },
+      { name: 'Leak Repair', customPrice: 110, customDescription: 'I find and fix leaks fast — same day service available.' },
+      { name: 'Water Heater Service', customPrice: 320, customDescription: 'Full install including old unit removal. All brands.' },
     ],
   },
   {
@@ -48,10 +48,10 @@ const TEST_PROVIDERS = [
     businessName: "Clara's Cleaning Co.",
     description: 'Eco-friendly deep cleaning and regular maintenance for homes and apartments. Flexible scheduling, pet-safe products.',
     categorySlug: 'cleaning',
-    verificationStatus: 'pending',
+    verificationStatus: 'verified',
     services: [
-      { name: 'Deep Cleaning', customPrice: 140, customDescription: 'Top-to-bottom deep clean. Inside appliances included.' },
-      { name: 'Regular Home Cleaning', customPrice: 75, customDescription: 'Weekly or bi-weekly. Same cleaner every visit.' },
+      { name: 'Deep Clean', customPrice: 140, customDescription: 'Top-to-bottom deep clean. Inside appliances included.' },
+      { name: 'Regular Maintenance', customPrice: 75, customDescription: 'Weekly or bi-weekly. Same cleaner every visit.' },
     ],
   },
 ];
@@ -168,14 +168,14 @@ async function main() {
     const { data: provRow, error: provError } = await supabase
       .from('providers')
       .upsert({
-        user_id: userId,
+        user_id: internalUserId,
         business_name: def.businessName,
         description: def.description,
-        verification_status: def.verificationStatus,  
-        is_fully_verified: true,                      
         is_active: true,
-      }, { onConflict: 'user_id' }
-    )
+        id_verified: true,
+        face_matched: true,
+        nsopw_checked: true,
+      }, { onConflict: 'user_id' })
       .select('id')
       .single();
 

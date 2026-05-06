@@ -77,14 +77,14 @@ export const createBooking = async (req, res) => {
     // Verify provider exists and is active ──────────────────────
     const { data: provider } = await supabase
       .from('providers')
-      .select('id, is_fully_verified, user_id, verification_status, is_active')
+      .select('id, user_id, is_active, is_fully_verified')
       .eq('id', provider_id)
       .single();
 
     if (!provider) {
-      return res.status(403).json({
+      return res.status(404).json({
         success: false,
-        error: 'Bookings are only allowed with verified providers',
+        error: 'Provider not found',
       });
     }
 
@@ -165,7 +165,7 @@ export const createBooking = async (req, res) => {
         customer_id:     internalUser.id,
         provider_id,
         service_id,
-        availability_id: availability_id || null,
+        availability_id: null,
         scheduled_at,
         notes:           notes || null,
         total_price:     priceToCharge,
