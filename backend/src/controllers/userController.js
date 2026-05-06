@@ -142,10 +142,16 @@ export const getUser = async (req, res) => {
 
 export const listUsers = async (req, res) => {
   try {
-    const { data: users, error } = await supabase
+    // Optional ?role=customer|provider|admin filter. No filter = all users.
+    const roleFilter = req.query.role || null;
+
+    let query = supabase
       .from('users')
-      .select('id, supabase_id, full_name, avatar_url, role, email, verification_status')
-      .eq('role', 'customer');
+      .select('id, supabase_id, full_name, avatar_url, role, email, verification_status');
+
+    if (roleFilter) query = query.eq('role', roleFilter);
+
+    const { data: users, error } = await query;
 
     if (error) {
       return res.status(400).json({ success: false, error: error.message });
