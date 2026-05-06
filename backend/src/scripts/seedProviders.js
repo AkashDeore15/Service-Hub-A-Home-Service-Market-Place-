@@ -167,18 +167,15 @@ async function main() {
     // ── 3c. Upsert public.providers row ──
     const { data: provRow, error: provError } = await supabase
       .from('providers')
-      .upsert(
-        {
-          user_id: internalUserId,
-          business_name: def.businessName,
-          description: def.description,
-          is_active: true,
-          verification_status: def.verificationStatus,
-          rating_avg: 0,
-          rating_count: 0,
-        },
-        { onConflict: 'user_id' },
-      )
+      .upsert({
+        user_id: userId,
+        business_name: def.businessName,
+        description: def.description,
+        verification_status: def.verificationStatus,  
+        is_fully_verified: true,                      
+        is_active: true,
+      }, { onConflict: 'user_id' }
+    )
       .select('id')
       .single();
 
