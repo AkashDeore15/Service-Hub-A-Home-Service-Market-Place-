@@ -19,6 +19,7 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import verificationRoutes from './routes/verificationRoutes.js';
 import addressRoutes from './routes/addressRoutes.js';
+import availabilityRoutes from './routes/availabilityRoutes.js';
 import testRoutes        from './routes/testRoutes.js';
 import assessmentRoutes  from './routes/assessmentRoutes.js';
 import dashboardRoutes   from './routes/dashboardRoutes.js';
@@ -86,6 +87,7 @@ app.use('/api/assessments',  assessmentRoutes);
 app.use('/api/complaints',   complaintRoutes);
 app.use('/api/verification', verificationRoutes);
 app.use('/api/addresses',    addressRoutes);
+app.use('/api/availability', availabilityRoutes);
 
 // Test routes — development only, never exposed in production
 if (process.env.NODE_ENV !== 'production') {
