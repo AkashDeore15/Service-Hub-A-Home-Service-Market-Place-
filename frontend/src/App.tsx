@@ -441,6 +441,14 @@ const App = () => {
             onRegisterClick={() => navigate("/register")}
           />
         );
+      case "/my-bookings":
+        return isAuthenticated ? (
+          user && String(user.role).toLowerCase() === "provider" ? (
+            <ProviderBookings token={getToken()} onNavigate={navigate} />
+          ) : (
+            <CustomerDashboard user={user} token={getToken()} onNavigate={navigate} />
+          )
+        ) : null;
       case "/register":
         return (
           <Register
