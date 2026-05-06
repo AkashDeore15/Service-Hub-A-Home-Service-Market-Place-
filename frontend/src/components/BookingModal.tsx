@@ -120,6 +120,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   // Submission
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Tracks whether displayed slots are real provider slots or generated fallbacks
+  const [usedFallback, setUsedFallback] = useState(false);
 
   useEffect(() => {
     const p = readDamagePrefill();
@@ -137,6 +139,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       setSlotsLoading(true);
       setSlots([]);
       setSelectedSlot(null);
+      setUsedFallback(false);
       const dateStr = toLocalDate(selectedDate!);
       try {
         const res = await fetch(
@@ -156,13 +159,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               endTime: s.end_time,
               label: `${fmt12h(s.start_time)} – ${fmt12h(s.end_time)}`,
             }));
+          setUsedFallback(false);
           setSlots(available);
         } else {
           // No availability endpoint yet — fall back to generated slots
+          setUsedFallback(true);
           setSlots(generateFallbackSlots());
         }
       } catch {
-        if (!controller.signal.aborted) setSlots(generateFallbackSlots());
+        if (!controller.signal.aborted) {
+          setUsedFallback(true);
+          setSlots(generateFallbackSlots());
+        }
       } finally {
         if (!controller.signal.aborted) setSlotsLoading(false);
       }
@@ -366,7 +374,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   No slots available on this date. Try another day.
                 </p>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <>
+                  {usedFallback && (
+                    <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 mb-2 text-xs text-amber-800">
+                      <span className="mt-0.5">⚠️</span>
+                      <span>
+                        <span className="font-bold">Suggested times only</span> — this provider hasn't set specific availability. These are general windows. The provider will confirm your chosen time after booking.
+                      </span>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {slots.map((slot) => (
                     <button
                       key={slot.id}
@@ -384,6 +401,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     </button>
                   ))}
                 </div>
+                </>
               )}
             </section>
           )}
