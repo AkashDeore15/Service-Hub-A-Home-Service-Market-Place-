@@ -7,7 +7,7 @@ export const getProvider = async (req, res) => {
     const { data: provider, error } = await supabase
       .from('providers')
       .select(`
-        id, business_name, description, rating_avg, rating_count, is_fully_verified,
+        id, business_name, description, rating_avg, rating_count,
         user:users(full_name, email, avatar_url, role),
         provider_categories(category_id)
       `)
@@ -159,10 +159,10 @@ export const searchProviders = async (req, res) => {
 
     if (categoryProviderIds) query = query.in('id', categoryProviderIds);
 
-    // Filters — replaces your Mongoose filter object
-    if (minRating)          query = query.gte('rating_avg', Number(minRating));
+    // Filters
+    if (minRating)              query = query.gte('rating_avg', Number(minRating));
     if (isActive !== undefined) query = query.eq('is_active', isActive === 'true');
-    if (search)             query = query.ilike('business_name', `%${search}%`);
+    if (search)                 query = query.ilike('business_name', `%${search}%`);
 
     // Pagination
     const from = (Number(page) - 1) * Number(limit);

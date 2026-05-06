@@ -441,6 +441,14 @@ const App = () => {
             onRegisterClick={() => navigate("/register")}
           />
         );
+      case "/my-bookings":
+        return isAuthenticated ? (
+          user && String(user.role).toLowerCase() === "provider" ? (
+            <ProviderBookings token={getToken()} onNavigate={navigate} />
+          ) : (
+            <CustomerDashboard user={user} token={getToken()} onNavigate={navigate} />
+          )
+        ) : null;
       case "/register":
         return (
           <Register
@@ -491,8 +499,6 @@ const App = () => {
       }
       case "/reset-password":
         return <ResetPassword onNavigate={navigate} />;
-      case "/my-bookings":
-        return <ProviderBookings token={getToken()} onNavigate={navigate} />;
       default:
         return (
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
