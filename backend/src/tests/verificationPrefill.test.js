@@ -2,6 +2,9 @@
  * Tests for Bug-Fix-3:
  *   VER-PREFILL-01/02 — getPrefill must return date_of_birth from users.dob (Bug A)
  *   VER-UPLOAD-01     — uploadId 500 must not leak stack traces (Bug B-B2)
+ *   VER-INSERT-01     — uploadId always INSERTs a new row, never UPSERTs
+ *   VER-SELFIE-01     — uploadSelfie stores face_match_score from faceMatchResult.similarity
+ *   VER-SELFIE-02     — uploadSelfie 500 body does not contain stack trace
  */
 
 import { jest } from '@jest/globals';
@@ -96,6 +99,8 @@ describe('getPrefill — Bug A (DOB)', () => {
     );
   });
 });
+
+// ── VER-UPLOAD-01 ────────────────────────────────────────────────────────
 
 describe('uploadId — Bug B-B2 (no stack trace leak)', () => {
   test('VER-UPLOAD-01: 500 body does not contain stack trace or raw error message', async () => {
